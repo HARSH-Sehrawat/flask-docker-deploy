@@ -42,12 +42,9 @@ docker build -t flask-app-image . || error_exit "Docker build failed"
 log "Stopping existing container (if any)..."
 docker rm -f flask-app-container || true
 
-log "Running Flask app container..."
-docker run -d -p 5000:5000 --name flask-app-container flask-app-image || error_exit "Failed to start container"
+log "Running Flask app container with restart policy..."
+docker run -d -p 5000:5000 --restart always --name flask-app-container flask-app-image || error_exit "Failed to start container"
 
-log "Deployment complete!"
+log "Deployment complete! Container is running."
 
-log "Rebooting instance in 10 seconds to apply docker group changes..."
-sleep 10
-sudo reboot
 
