@@ -7,5 +7,5 @@ RUN pip install -r requirement.txt
 
 COPY . .
 
-CMD ["python3","flask-app.py"]
+CMD ["python3","flask-app.py","--host=0.0.0.0"]
 
