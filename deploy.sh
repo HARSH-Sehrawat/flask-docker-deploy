@@ -1,44 +1,53 @@
 #!/usr/bin/env bash
 
-# exit on error
-set -e 
+set -e
 
-log () {
-	echo -e "\033[1,32m[INFO] $1\033\[0m"
+LOGFILE="/home/ubuntu/deploy.log"
+exec > >(tee -i $LOGFILE)
+exec 2>&1
+
+log() {
+  echo -e "\033[1;32m[INFO]\033[0m $1"
 }
 
 error_exit() {
-	echo -e "\033[1;31m[ERROR] $1\033[0m" >&2
-	exit 1
+  echo -e "\033[1;31m[ERROR]\033[0m $1" >&2
+  exit 1
 }
 
-log "Updating system package"
-sudo apt update -y || error_exit "Failed package update"
-sudo apt upgrade -y || error_exit "Filaed package upgrade"
+log "Updating system packages..."
+sudo apt update -y || error_exit "Failed to update apt"
+sudo apt upgrade -y || error_exit "Failed to upgrade apt"
 
-log "Installing Docker..."
-sudo apt install -y docker.io || error_exit "Failed to install Docker"
-sudo systemctl start docker
+log "Installing Docker and Git..."
+sudo apt install -y docker.io git || error_exit "Failed to install docker or git"
+
+log "Adding user 'ubuntu' to docker group..."
+sudo usermod -aG docker ubuntu || error_exit "Failed to add user to docker group"
+
+log "Enabling and starting docker service..."
 sudo systemctl enable docker
-sudo usermod -aG docker $USER
-
-log "Installing Git..."
-sudo apt install -y git || error_exit "Failed to install Git"
+sudo systemctl start docker
 
 log "Cloning Flask app repo..."
-cd /home/ubuntu || error_exit "Failed to change directory"
+cd /home/ubuntu || error_exit "Failed to cd /home/ubuntu"
 rm -rf flask-app || true
 git clone https://github.com/HARSH-Sehrawat/flask-docker-deploy.git flask-app || error_exit "Git clone failed"
 
-cd flask-app || error_exit "Directory not found"
+cd flask-app || error_exit "Flask app directory not found"
 
 log "Building Docker image..."
 docker build -t flask-app-image . || error_exit "Docker build failed"
 
-log "Stopping any existing container..."
+log "Stopping existing container (if any)..."
 docker rm -f flask-app-container || true
 
-log "Running container..."
-docker run -d -p 5000:5000 --name flask-app-container flask-app-image || error_exit "Container failed to start"
+log "Running Flask app container..."
+docker run -d -p 5000:5000 --name flask-app-container flask-app-image || error_exit "Failed to start container"
 
-log "Deployment successful. App running on port 5000!"
+log "Deployment complete!"
+
+log "Rebooting instance in 10 seconds to apply docker group changes..."
+sleep 10
+sudo reboot
+
