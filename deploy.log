@@ -1,0 +1,68 @@
+[1;32m[INFO][0m Updating system packages...
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Hit:1 http://eu-north-1.ec2.archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://eu-north-1.ec2.archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:3 http://eu-north-1.ec2.archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
+Reading package lists...
+Building dependency tree...
+Reading state information...
+All packages are up to date.
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+[1;32m[INFO][0m Installing Docker and Git...
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Reading package lists...
+Building dependency tree...
+Reading state information...
+docker.io is already the newest version (27.5.1-0ubuntu3~24.04.2).
+git is already the newest version (1:2.43.0-1ubuntu7.2).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+[1;32m[INFO][0m Adding user 'ubuntu' to docker group...
+[1;32m[INFO][0m Enabling and starting docker service...
+[1;32m[INFO][0m Cloning Flask app repo...
+Cloning into 'flask-app'...
+[1;32m[INFO][0m Building Docker image...
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  72.19kB
+Step 1/7 : FROM python:3.10-slim
+ ---> e6d8b768c22f
+Step 2/7 : WORKDIR /app
+ ---> Using cache
+ ---> 9f3c00253fee
+Step 3/7 : COPY requirements.txt requirements.txt
+ ---> Using cache
+ ---> ee47131243d4
+Step 4/7 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> b07da5eea2e5
+Step 5/7 : COPY . .
+ ---> 981af74b8aa9
+Step 6/7 : EXPOSE 5000
+ ---> Running in 204519022fc2
+ ---> Removed intermediate container 204519022fc2
+ ---> 9e2eab0bc44c
+Step 7/7 : CMD ["python3", "flask-app.py"]
+ ---> Running in 2049b427ac35
+ ---> Removed intermediate container 2049b427ac35
+ ---> 9330e692e0a8
+Successfully built 9330e692e0a8
+Successfully tagged flask-app-image:latest
+[1;32m[INFO][0m Stopping existing container (if any)...
+flask-app-container
+[1;32m[INFO][0m Running Flask app container with restart policy...
+70e97a3944781ae8d878cbfe5ad470c183ca4120b18fda32c4b3533bbb11794c
+[1;32m[INFO][0m Deployment complete! Container is running.
